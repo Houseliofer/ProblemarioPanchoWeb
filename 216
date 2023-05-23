@@ -1,0 +1,34 @@
+<?php
+fscanf(STDIN, "%s", $s);
+fscanf(STDIN, "%s", $u);
+fscanf(STDIN, "%s", $p);
+ fscanf(STDIN, "%s", $bd);
+
+
+$conn=mysqli_connect($s,$u,$p,$bd);
+
+$sql = "SELECT juegos.id, u1.Nombre AS Invitador, u2.Nombre AS Invitado, juegos.secuencia FROM juegos
+        JOIN usuarios u1 ON juegos.id_usuario = u1.Usuario
+        JOIN usuarios u2 ON juegos.id_invitado = u2.Usuario";
+
+$result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_assoc($result)) {
+  $id_juego = $row['id'];
+  $secuencia = $row['secuencia'];
+  $invitador = $row['Invitador'];
+  $invitado = $row['Invitado'];
+
+  $fichas = explode(",", $secuencia);
+  $fichas_sin_repetir = array_unique($fichas);
+  $duplicados = array_diff_assoc($fichas, $fichas_sin_repetir);
+  if (!empty($duplicados))
+    echo "$id_juego:$invitador:$invitado:Ficha Duplicada\n";
+   else {
+    if (count($fichas) != 28)
+      echo "$id_juego:$invitador:$invitado:Secuencia Mal\n";
+  }
+}
+
+mysqli_close($conn);
+?>
